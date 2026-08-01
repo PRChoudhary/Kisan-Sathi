@@ -1,97 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased selection:bg-farmer-500 selection:text-white;
+  :root {
+    --color-primary: #16a34a;
+    --color-primary-dark: #15803d;
+    --color-bg: #fafafa;
+    --color-surface: #ffffff;
+    --color-border: #e2e8f0;
+    --color-text: #0f172a;
+    --color-muted: #64748b;
   }
 
-  /* Accessibility focus ring */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Global selection style */
+  ::selection {
+    background-color: #16a34a33;
+    color: #14532d;
+  }
+
+  /* Global focus ring */
   *:focus-visible {
-    @apply outline-none ring-2 ring-farmer-600 ring-offset-2 ring-offset-white;
+    outline: none;
+    ring: 2px solid var(--color-primary);
+    ring-offset: 2px;
   }
 }
 
-/* Glassmorphism SaaS Utility */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* ===================== 
+   DARK MODE SUPPORT 
+   ===================== */
+.dark body {
+  --color-bg: #0a0a0a;
+  --color-surface: #111111;
+  --color-border: #1e1e1e;
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.dark .dark-card {
+  background-color: #111111;
+  border-color: #1e1e1e;
+  color: #f8fafc;
+}
+
+.dark .dark-nav {
+  background-color: rgba(10, 10, 10, 0.95);
+  border-color: #1e1e1e;
+}
+
+/* ===================== 
+   GLASSMORPHISM 
+   ===================== */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-.glass-card-dark {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.glass-dark {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Card hover animation */
+/* ===================== 
+   CARD INTERACTIONS 
+   ===================== */
 .card-hover {
-  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-farmer-200;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+  border-color: rgba(22, 163, 74, 0.3);
 }
 
-/* Shimmer Loading Skeleton */
-.shimmer-skeleton {
+/* ===================== 
+   SHIMMER SKELETON 
+   ===================== */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.shimmer {
   background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
   background-size: 200% 100%;
-  animation: shimmer 1.6s infinite ease-in-out;
+  animation: shimmer 1.6s ease-in-out infinite;
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+.dark .shimmer {
+  background: linear-gradient(90deg, #1e1e1e 0%, #2a2a2a 50%, #1e1e1e 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
 }
 
-/* Custom Leaflet Map overrides */
+/* ===================== 
+   TYPING ANIMATION 
+   ===================== */
+@keyframes typing-dot {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+  40%           { transform: scale(1.0); opacity: 1.0; }
+}
+
+.typing-dot {
+  animation: typing-dot 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ===================== 
+   CUSTOM SCROLLBARS 
+   ===================== */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ===================== 
+   LEAFLET MAP OVERRIDES 
+   ===================== */
 .leaflet-container {
   width: 100%;
   height: 100%;
   z-index: 10;
   border-radius: 1.5rem;
+  font-family: 'Inter', sans-serif !important;
 }
 
 .leaflet-control-zoom {
   border: none !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12) !important;
 }
 
 .leaflet-control-zoom a {
   background-color: #ffffff !important;
   color: #166534 !important;
-  font-weight: bold !important;
+  font-weight: 700 !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 10px !important;
   margin-bottom: 4px !important;
+  transition: all 0.15s !important;
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #16a34a;
+.leaflet-control-zoom a:hover {
+  background-color: #f0fdf4 !important;
+  color: #15803d !important;
 }
 
-/* Hide scrollbar utility */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* ===================== 
+   FADE-IN UTILITY 
+   ===================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out;
 }

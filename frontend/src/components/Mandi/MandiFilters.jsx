@@ -6,7 +6,8 @@ export default function MandiFilters({
   options,
   onFilterChange,
   onReset,
-  loading
+  loading,
+  activeFilterCount = 0,
 }) {
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
@@ -33,6 +34,11 @@ export default function MandiFilters({
         >
           <LuRefreshCw className="w-4 h-4 text-slate-500" />
           <span>Reset Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="bg-farmer-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
         </button>
 
       </div>
