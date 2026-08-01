@@ -1,17 +1,18 @@
-# 🌾 Kisan Sathi (किसान साथी) - Production Ready Farmer Web Application
+# 🌾 Kisan Sathi (किसान साथी) - Production Ready Farmer Web Application & AI Copilot
 
-**Kisan Sathi** is a modern, responsive, farmer-friendly full-stack web application designed for Indian farmers. It equips farmers with three essential modules:
+**Kisan Sathi** is a modern, responsive, farmer-friendly full-stack web application designed for Indian farmers. It equips farmers with four essential modules:
 
 1. **☀️ Live Weather & 7-Day Forecast** (GPS auto-location, Open-Meteo API, humidity, wind, rain probability, sunrise/sunset, city search, favorite locations).
-2. **📈 Live Mandi Market Prices** (AGMARKNET data, search by crop/state/district/market, sorting, filtering, pagination, desktop table, mobile cards, favorite crops bookmarking).
+2. **📈 Live Mandi Market Prices** (AGMARKNET data with price trend indicators `↑` green / `↓` red, search by crop/state/district/market, sorting, filtering, pagination, desktop table, mobile cards, favorite crops bookmarking).
 3. **🗺️ Satellite Land Field Measurement** (React Leaflet satellite imagery, 3 methods: Tap Points, Manual Polygon Draw with Node Dragging, & Live GPS Walk Tracking, real-time conversion to **Square Meters, Square Feet, Acre, & Hectare**, save/rename/delete field boundaries).
+4. **🤖 Kisan AI Copilot (OpenAI Streaming Assistant)** (Context-aware agricultural assistant powered by OpenAI `gpt-4o-mini` with Server-Sent Events SSE streaming, automatic weather, mandi, & field area context injection, and built-in smart fallback engine).
 
 ---
 
 ## 🛠️ Technology Stack
 
-* **Frontend**: React.js (Vite), JavaScript (ES6), Tailwind CSS, React Router DOM, Axios, React Hook Form, React Leaflet, React Icons
-* **Backend**: Node.js, Express.js, JavaScript
+* **Frontend**: React.js (Vite), JavaScript (ES6), Tailwind CSS, React Router DOM, Axios, React Hook Form, React Leaflet, React Icons, Server-Sent Events (SSE)
+* **Backend**: Node.js, Express.js, OpenAI Node.js SDK
 * **Database & ORM**: PostgreSQL, Prisma ORM
 * **Deployment Readiness**: Vercel (Frontend), Railway (All-in-One Node.js Backend API + PostgreSQL Database)
 
@@ -25,6 +26,7 @@ c:\Users\Owner\OneDrive\Documents\web development\Agri\
 │   ├── config/
 │   │   └── db.js                    # Prisma DB client instance
 │   ├── controllers/
+│   │   ├── aiController.js          # OpenAI streaming SSE chat & fallback engine
 │   │   ├── authController.js        # Email, Google, Phone OTP auth logic
 │   │   ├── weatherController.js     # Weather & Open-Meteo Geocoding API
 │   │   ├── mandiController.js       # Mandi search, filtering, pagination
@@ -38,6 +40,7 @@ c:\Users\Owner\OneDrive\Documents\web development\Agri\
 │   ├── prisma/
 │   │   └── schema.prisma            # PostgreSQL Prisma schema (users, saved_fields, etc.)
 │   ├── routes/
+│   │   ├── aiRoutes.js              # /api/ai routes
 │   │   ├── authRoutes.js            # /api/auth routes
 │   │   ├── weatherRoutes.js         # /api/weather routes
 │   │   ├── mandiRoutes.js           # /api/mandi routes
@@ -51,18 +54,19 @@ c:\Users\Owner\OneDrive\Documents\web development\Agri\
     ├── public/
     ├── src/
     │   ├── components/
-    │   │   ├── Navbar.jsx           # Top nav with mobile responsive drawer
+    │   │   ├── Navbar.jsx           # Top nav with profile dropdown & notification center
     │   │   ├── Footer.jsx           # Footer with links & helpline
     │   │   ├── AuthModal.jsx        # Login/Register modal (Email, Google, Phone)
+    │   │   ├── AI/                  # Floating AI Chat widget & Markdown message renderer
     │   │   ├── Weather/             # Current weather, 7-day forecast & city search
-    │   │   ├── Mandi/               # Filters, desktop table, mobile cards, pagination
+    │   │   ├── Mandi/               # Filters, price trend badges, table, mobile cards
     │   │   └── LandMeasure/         # Satellite map, 3 methods, metrics, saved fields
     │   ├── context/
     │   │   ├── AuthContext.jsx      # Global authentication state
     │   │   └── AppContext.jsx       # Global favorites & saved fields state
-    │   ├── pages/                   # Home, Weather, Mandi, Measure Land, About, Contact
+    │   ├── pages/                   # Home, Weather, Mandi, Measure Land, AI Assistant, About, Contact
     │   ├── services/
-    │   │   └── api.js               # Axios API client
+    │   │   └── api.js               # Axios API client & SSE AI stream reader
     │   ├── utils/
     │   │   ├── geoCalcs.js          # Geodesic area & perimeter formulas
     │   │   └── formatters.js        # INR formatting & date helpers
@@ -92,6 +96,8 @@ npm install
 # Copy environment variables
 cp .env.example .env
 
+# Configure OPENAI_API_KEY in .env (Optional, fallback rule engine included!)
+
 # Generate Prisma Client (if DB URL is configured)
 npx prisma generate
 
@@ -118,12 +124,15 @@ npm run dev
 
 ## 🌐 REST API Endpoints
 
+### 🤖 AI Copilot (OpenAI Streaming)
+* `POST /api/ai/chat` - Real-time SSE streaming AI assistant with dynamic weather, mandi, & field area context injection.
+
 ### Weather
 * `GET /api/weather?lat=28.6139&lon=77.2090` - Get weather by GPS coordinates
 * `GET /api/weather/search?q=Ludhiana` - Search weather by city name
 
 ### Mandi Prices
-* `GET /api/mandi` - List mandi prices with search, state, district, crop, market filters, sort, & pagination
+* `GET /api/mandi` - List mandi prices with price trend badges, search, state, district, crop, market filters, sort, & pagination
 * `GET /api/mandi/search` - Search mandi prices
 
 ### Land Fields
@@ -145,18 +154,12 @@ npm run dev
 
 ## 🚀 Deployment Guide
 
-### Database (Supabase PostgreSQL)
-1. Create a project on [Supabase](https://supabase.com/).
-2. Copy the PostgreSQL connection URI from Database Settings.
-3. In `backend/.env`, set `DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres?schema=public"`.
-4. Run `npx prisma db push` to push the schema tables.
-
 ### Backend Deployment (Railway)
 1. Link your Git repository to [Railway](https://railway.app/).
-2. Set Root Directory to `backend/`.
-3. Add environment variables: `DATABASE_URL`, `JWT_SECRET`, `NODE_ENV=production`.
-4. Build command: `npm install && npx prisma generate`.
-5. Start command: `npm start`.
+2. Add PostgreSQL service to your Railway project.
+3. Set Root Directory to `backend/`.
+4. Add environment variables: `DATABASE_URL`, `JWT_SECRET`, `OPENAI_API_KEY`.
+5. Start command: `node server.js`.
 
 ### Frontend Deployment (Vercel)
 1. Link your Git repository to [Vercel](https://vercel.com/).
