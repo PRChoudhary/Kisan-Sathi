@@ -1,4 +1,4 @@
-# 🌾 Kisan Sathi (किसान साथी) - Production Ready Farmer Web Application & AI Copilot
+# 🌾 Kisan Sathi (किसान साथी) - Web Application & AI Copilot For Farmer
 
 **Kisan Sathi** is a modern, responsive, farmer-friendly full-stack web application designed for Indian farmers. It equips farmers with four essential modules:
 
@@ -149,26 +149,6 @@ npm run dev
 * `GET /api/favorites/crops` - Get user favorite crops
 * `POST /api/favorites/crops` - Bookmark a crop
 * `DELETE /api/favorites/crops/:id` - Remove crop bookmark
-
----
-
-## 🚀 Deployment Guide
-
-### Backend Deployment (Railway)
-1. Link your Git repository to [Railway](https://railway.app/).
-2. Add PostgreSQL service to your Railway project.
-3. Set Root Directory to `backend/`.
-4. Add environment variables: `DATABASE_URL`, `JWT_SECRET`, `OPENAI_API_KEY`.
-5. Start command: `node server.js`.
-
-### Frontend Deployment (Vercel)
-1. Link your Git repository to [Vercel](https://vercel.com/).
-2. Set Framework Preset to **Vite**.
-3. Set Root Directory to `frontend/`.
-4. Add Environment Variable: `VITE_API_URL=https://your-railway-backend-url.up.railway.app/api`.
-5. Click **Deploy**.
-
----
 
 ## 📄 License
 Dedicated to the welfare of Indian Farmers. MIT License.
