@@ -1,0 +1,76 @@
+// Prisma Schema for Kisan Sathi Backend
+// Database: PostgreSQL (Supabase / Railway)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String             @id @default(uuid())
+  email             String?            @unique
+  phone             String?            @unique
+  name              String
+  password          String?
+  authType          String             @default("EMAIL") // EMAIL, GOOGLE, PHONE
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  
+  savedFields       SavedField[]
+  favoriteCrops     FavoriteCrop[]
+  favoriteLocations FavoriteLocation[]
+
+  @@map("users")
+}
+
+model SavedField {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  name            String
+  polygon         Json     // Array of [lat, lng] coordinates
+  areaSqMeters    Float    @map("area_sq_meters")
+  areaSqFeet      Float    @map("area_sq_feet")
+  areaAcres       Float    @map("area_acres")
+  areaHectares    Float    @map("area_hectares")
+  perimeterMeters Float    @map("perimeter_meters")
+  method          String   // TAP_POINTS, MANUAL_DRAW, GPS_WALK
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("saved_fields")
+}
+
+model FavoriteCrop {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  cropName  String   @map("crop_name")
+  state     String?
+  district  String?
+  market    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("favorite_crops")
+}
+
+model FavoriteLocation {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  locationName String   @map("location_name")
+  latitude     Float
+  longitude    Float
+  state        String?
+  country      String   @default("India")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("favorite_locations")
+}
